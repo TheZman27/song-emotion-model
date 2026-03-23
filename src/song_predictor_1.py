@@ -1,5 +1,5 @@
 import pandas
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 from sklearn import linear_model
 from sklearn.multioutput import MultiOutputRegressor
 
@@ -16,7 +16,7 @@ def get_song_predictor() -> MultiOutputRegressor:
         'delta: calm to energetic',
         'delta: relaxed to stressed'
     """
-    df = pandas.read_csv('../out/merged_data.csv')
+    df = pandas.read_csv('./out/merged_data.csv')
     X = df.loc[
         :,
         [
