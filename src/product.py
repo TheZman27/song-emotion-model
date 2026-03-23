@@ -32,7 +32,12 @@ def get_closest_song(delta_emotion):
             if (not min_dist) or (prediction_distance < min_dist):
                 min_dist = prediction_distance
                 best_prediction_i = i
-    return df.iloc[best_prediction_i]
+    predicted_effect = predictions[best_prediction_i]
+    best_song = df.iloc[best_prediction_i].copy()
+    best_song['delta: sad to happy'] = predicted_effect[0]
+    best_song['delta: calm to energetic'] = predicted_effect[1]
+    best_song['delta: relaxed to stressed'] = predicted_effect[2]
+    return best_song
 
 def emotion_distance(emotion_1, emotion_2):
     assert len(emotion_1) == len(emotion_2)
@@ -46,6 +51,14 @@ def main():
         goal_emotion_input = input("Goal emotion: ")
         goal_emotion = np.array([float(goal_emotion_input.split()[i]) for i in range(3)])
         delta_emotion = goal_emotion-start_emotion
-        print(get_closest_song(delta_emotion)['song_link'])
+        closest_song = get_closest_song(delta_emotion)
+        print("Song recommendation:")
+        print(closest_song['name'])
+        print(closest_song['song_link'])
+        print("Predicted Effect:")
+        print("Happiness:", closest_song['delta: sad to happy'])
+        print("Energy:", closest_song['delta: calm to energetic'])
+        print("Stress:", closest_song['delta: relaxed to stressed'])
+
 if __name__ == "__main__":
     main()
