@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QGridLayout,
     QSlider, QFrame
 )
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import Qt
 
 
@@ -159,6 +160,11 @@ class MainWindow(QMainWindow):
         self.song_box.setLayout(song_layout)
         main_layout.addWidget(self.song_box)
 
+        # Added feature, spotify html embed 
+        self.song_html = QWebEngineView()
+        self.song_html.setHtml("""""")
+        song_layout.addWidget(self.song_html) 
+
     def generate_song(self):
         current_emotion = np.array([
             self.now_sad_happy.get_value(),
@@ -178,11 +184,18 @@ class MainWindow(QMainWindow):
             song = product.get_closest_song(delta_emotion)
             song_name = song["name"]
             song_link = song["song_link"]
-
+            song_id = song['id']
             self.song_text.setText(
                 f"<div style='font-size:16px;'>"
                 f"<a href='{song_link}'><b>{song_name}</b></a><br>"
                 f"</div>"
             )
+            spotify_embed = f"""
+<iframe style="border-radius:12px" 
+    src="https://open.spotify.com/embed/track/{song_id}?utm_source=generator" 
+    width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+</iframe>
+"""
+            self.song_html.setHtml(spotify_embed)
         except Exception as e:
             self.song_text.setText(f"Error: {e}")
