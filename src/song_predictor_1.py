@@ -4,7 +4,7 @@ from sklearn import linear_model
 from sklearn.multioutput import MultiOutputRegressor
 
 
-def get_song_predictor() -> MultiOutputRegressor:
+def get_song_predictor(file_address='./out/merged_data.csv') -> MultiOutputRegressor:
     """Returns a trained sklearn.MultiOutputRegressor model on our survey data. 
     The model inputs are:
         release_year, duration_ms.x, explicit, 
@@ -16,7 +16,7 @@ def get_song_predictor() -> MultiOutputRegressor:
         'delta: calm to energetic',
         'delta: relaxed to stressed'
     """
-    df = pandas.read_csv('./out/merged_data.csv')
+    df = pandas.read_csv(file_address)
     X = df.loc[
         :,
         [
