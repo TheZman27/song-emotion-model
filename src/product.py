@@ -32,7 +32,7 @@ def get_closest_song(delta_emotion, skip_explicit = True):
             if skip_explicit and cur_song['explicit']:
                 continue
             prediction_distance = emotion_distance(delta_emotion, predictions[i])
-            if (not min_dist) or (prediction_distance < min_dist):
+            if (min_dist is None) or (prediction_distance < min_dist):
                 min_dist = prediction_distance
                 best_prediction_i = i
     predicted_effect = predictions[best_prediction_i]

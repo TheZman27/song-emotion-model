@@ -4,7 +4,7 @@ import numpy as np
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton,
     QVBoxLayout, QHBoxLayout, QGridLayout,
-    QSlider, QFrame
+    QSlider, QFrame, QCheckBox
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import Qt
@@ -87,6 +87,10 @@ class MainWindow(QMainWindow):
                 border: 1px solid #999;
                 border-radius: 6px;
             }
+            QCheckBox {
+                font-size: 15px;
+                color: black;
+            }                           
         """)
 
         central = QWidget()
@@ -133,6 +137,14 @@ class MainWindow(QMainWindow):
         want_grid.addWidget(self.want_relaxed_stressed, 0, 2)
         main_layout.addLayout(want_grid)
 
+        self.explicit_checkbox = QCheckBox("Include explicit songs")
+        self.explicit_checkbox.setChecked(False)
+        checkbox_row = QHBoxLayout()
+        checkbox_row.addStretch()
+        checkbox_row.addWidget(self.explicit_checkbox)
+        checkbox_row.addStretch()
+        main_layout.addLayout(checkbox_row)
+
         button_row = QHBoxLayout()
         button_row.addStretch()
 
@@ -161,9 +173,9 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.song_box)
 
         # Added feature, spotify html embed 
-        self.song_html = QWebEngineView()
-        self.song_html.setHtml("""""")
-        song_layout.addWidget(self.song_html) 
+        # self.song_html = QWebEngineView()
+        # self.song_html.setHtml("""""")
+        # song_layout.addWidget(self.song_html) 
 
     def generate_song(self):
         current_emotion = np.array([
@@ -181,7 +193,11 @@ class MainWindow(QMainWindow):
         delta_emotion = tuple(goal_emotion - current_emotion)
 
         try:
-            song = product.get_closest_song(delta_emotion)
+
+            include_explicit = self.explicit_checkbox.isChecked()
+            skip_explicit = not include_explicit
+
+            song = product.get_closest_song(delta_emotion, skip_explicit=skip_explicit)
             song_name = song["name"]
             song_link = song["song_link"]
             song_id = song['id']
@@ -190,12 +206,12 @@ class MainWindow(QMainWindow):
                 f"<a href='{song_link}'><b>{song_name}</b></a><br>"
                 f"</div>"
             )
-            spotify_embed = f"""
-<iframe style="border-radius:12px" 
-    src="https://open.spotify.com/embed/track/{song_id}?utm_source=generator" 
-    width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
-</iframe>
-"""
-            self.song_html.setHtml(spotify_embed)
+#             spotify_embed = f"""
+# <iframe style="border-radius:12px" 
+#     src="https://open.spotify.com/embed/track/{song_id}?utm_source=generator" 
+#     width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+# </iframe>
+# """
+#             self.song_html.setHtml(spotify_embed)
         except Exception as e:
             self.song_text.setText(f"Error: {e}")
